@@ -21,16 +21,6 @@ def read_and_delete_file(fname):
     remove(fname)
     return time, cpu_time, comp
 
-def read_stdout(s):
-    lines = s.split(separator='\n')
-    result = 0
-    for line in lines:
-        if line.startswith("Total Sent /Rcv"):
-            comms = re.findall(r'\d+', line)
-            if len(comms) == 2:
-                result += int(comms[0])
-    return result
-
 def experiment(num_eles, num_bins, out, srv_seed=10, cli_seed=100, num_bits=16):
     # subprocess.run("./my_psi", "-r", 0, "-n", num_eles, "-b", num_bits, "-m", num_bins, "-s", seed)
     timeout_s = 60*5
@@ -47,12 +37,6 @@ def experiment(num_eles, num_bins, out, srv_seed=10, cli_seed=100, num_bits=16):
     
     print("experiment successfully executed.")
 
-    lines0 = process0.stdout.read()
-    lines1 = process1.stdout.read()
-
-    srv_comm = read_stdout(line0)
-    cli_comm = read_stdout(line1)
-
     srv_time, srv_cpu_time, srv_comp = read_and_delete_file(f"0{srv_seed}.txt")
     cli_time, cli_cpu_time, cli_comp = read_and_delete_file(f"1{cli_seed}.txt")
 
@@ -60,7 +44,7 @@ def experiment(num_eles, num_bins, out, srv_seed=10, cli_seed=100, num_bits=16):
 
     print(f"neles: {num_eles},\tnbins: {num_bins},\ttime: {time},\tsrv cpu time: {srv_cpu_time},\tcli cpu time: {cli_cpu_time}\tcomp: {srv_comp}")
 
-    out.write(f"{num_eles}, {num_bins}, {time}, {srv_cpu_time}, {cli_cpu_time}, {srv_comp}, {srv_comm + cli_comm}\n")
+    out.write(f"{num_eles}, {num_bins}, {time}, {srv_cpu_time}, {cli_cpu_time}, {srv_comp}\n")
 
 seed(datetime.now())
 
