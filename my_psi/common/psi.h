@@ -58,7 +58,7 @@ std::vector<std::string> split(const std::string & s, const std::string & by);
 int find_communication(const std::string & s);
 
 int32_t test_psi_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
-		uint32_t nvals, uint32_t bitlen, uint32_t nbits, uint32_t nthreads, e_mt_gen_alg mt_alg, uint32_t seed);
+		uint32_t nvals, uint32_t bitlen, uint32_t nbits, uint32_t nthreads, e_mt_gen_alg mt_alg, uint32_t seed, std::string fname);
 uint32_t lsh(uint32_t interval, uint32_t input);
 uint32_t noise(uint32_t mask, e_role role);
 

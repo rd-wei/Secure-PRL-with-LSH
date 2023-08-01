@@ -7,7 +7,6 @@ from time import sleep
 from os import remove, killpg, getpgid
 from os.path import exists
 from signal import SIGTERM
-import re
 
 def read_and_delete_file(fname):
     f = open(fname, 'r')
@@ -23,19 +22,16 @@ def read_and_delete_file(fname):
 
 def experiment(num_eles, num_bins, out, srv_seed=10, cli_seed=100, num_bits=16):
     # subprocess.run("./my_psi", "-r", 0, "-n", num_eles, "-b", num_bits, "-m", num_bins, "-s", seed)
-    timeout_s = 60*5
+    timeout_s = 60*15
 
     try:
-        process0 = Popen([str(x) for x in ['./my_psi', "-r", 0, "-n", num_eles, "-b", num_bits, "-m", num_bins, "-s", srv_seed]], stdout=PIPE, stderr=PIPE)
-        process1 = Popen([str(x) for x in ['./my_psi', "-r", 1, "-n", num_eles, "-b", num_bits, "-m", num_bins, "-s", cli_seed]], stdout=PIPE, stderr=PIPE)
+        process0 = Popen([str(x) for x in ['./my_psi', "-r", 0, "-n", num_eles, "-b", num_bits, "-m", num_bins, "-s", srv_seed, "-f", "inp0"]], stdout=PIPE, stderr=PIPE)
+        process1 = Popen([str(x) for x in ['./my_psi', "-r", 1, "-n", num_eles, "-b", num_bits, "-m", num_bins, "-s", cli_seed, "-f", "inp1"]], stdout=PIPE, stderr=PIPE)
         process0.wait(timeout=timeout_s)
         process1.wait(timeout=10)
     except subprocess.TimeoutExpired:
-        killpg(getpgid(process0.pid), SIGTERM)
-        killpg(getpgid(process1.pid), SIGTERM)
-        raise
-    
-    print("experiment successfully executed.")
+        killpg(getpgid(p.pid), SIGTERM)
+        return
 
     srv_time, srv_cpu_time, srv_comp = read_and_delete_file(f"0{srv_seed}.txt")
     cli_time, cli_cpu_time, cli_comp = read_and_delete_file(f"1{cli_seed}.txt")
@@ -51,33 +47,33 @@ seed(datetime.now())
 count=1
 
 run_num=0
-while (exists(f"run{run_num}.csv")):
+while (exists(f"new_run{run_num}.csv")):
     run_num += 1
 
-out_filename = f"run{run_num}.csv"
+out_filename = f"new_run{run_num}.csv"
 
 outfile = open(out_filename, 'w')
 outfile.close()
 
-runs = 1
-num_eles_l = [1000,1500,2000]
-num_bins_l = [2,4,8,16]
-num_bits = 16
-
-for run in range(1, runs+1):
+for run in [1,2,3]:
 
     print(f"start measuring run #{run}")
-    
-    for num_eles in num_eles_l:
-        for num_bins in num_bins_l:
+
+    for num_eles in range(500, 3500, 50):
+        for num_bins in [8]:
+            # num_bins = 8
             outfile = open(out_filename, 'a')
-            s_seed = randint(1,500) * 10 + count
-            c_seed = randint(501, 1000) * 10 + count
+            # s_seed = randint(1,500) * 10 + count
+            # c_seed = randint(501, 1000) * 10 + count
+            s_seed = 0
+            c_seed = 1
             print (f"#{run}: server seed {s_seed} and client seed {c_seed}")
             sleep(1)
             try:
-                experiment(num_eles, num_bins, outfile, srv_seed=s_seed, cli_seed=c_seed, num_bits=num_bits)
+                experiment(num_eles, num_bins, outfile, srv_seed=s_seed, cli_seed=c_seed)
             except:
                 print(f"An exception occurred with server seed {s_seed} and client seed {c_seed}")
+                fail = open(f'failed{num_eles}eles{num_bins}bins', 'w')
+                fail.close()
             outfile.close()
             count += 1

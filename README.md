@@ -32,19 +32,21 @@ We need the ABY framework (https://github.com/encryptogroup/ABY.git) to run our 
 
 The folder `my_psi` should be placed in the `ABY/src/examples/` folder. The `CMakeLists.txt` in the same folder needs one extra line `add_subdirectory(my_psi)`.
 
-Then, make the project as instructed in ABY. Copy the `my_psi/common/measure.py` to `ABY/build/bin` and run `python3 measure.py`
+Then, make the project as instructed in ABY.
+
+Copy the `my_psi/common/gen.py` to `ABY/build/bin` and run `python3 gen.py`. It generates $2$ files that serve as input datasets to the experiments, `inp0` and `inp1`. The datasets we used were also included in `my_psi/common/inp0` and `my_psi/common/inp1`.
+
+Copy the `my_psi/common/measure.py` to `ABY/build/bin` and run `python3 measure.py`. This will start the experiment measuring the number of comparisons and runtime.
 
 ### Parameters
 
-On lines $62$ to $65$ of `measure.py` there are some parameters. 
+On lines $58$ to $63$ of `measure.py` there are some parameters. 
 
-`runs` specifies how many times we should repeat the experiment.
+`run` specifies how many times we should repeat the experiment. Here it is a list of length $3$, so it will be repeated $3$ times.
 
-`num_eles_l` is the number of input for both parties.
+`num_eles` is the number of input for both parties. Here it is in the range between $500$ to $3500$.
 
-`num_bins_l` is the number of bins per duplicate, $l$, as in the previous section. 
-
-`num_bits` is the size of a single input. For example, `num_bits = 16` means a record would be a $16$ bit integer.
+`num_bins` is the number of bins per duplicate. It is fixed to $8$ here.
 
 ### Files
 

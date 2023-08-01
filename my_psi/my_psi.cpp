@@ -28,7 +28,7 @@
 
 int32_t read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 		uint32_t* bitlen, uint32_t* neles, uint32_t * nbins, uint32_t* secparam, std::string* address,
-		uint16_t* port, int32_t* test_op, uint32_t * seed) {
+		uint16_t* port, int32_t* test_op, uint32_t * seed, std::string* fname) {
 
 	uint32_t int_role = 0, int_port = 0;
 	bool useffc = false;
@@ -41,7 +41,8 @@ int32_t read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 			  { (void*) secparam, T_NUM, "S", "Symmetric Security Bits, default: 128", false, false },
 			  {	(void*) address, T_STR, "a", "IP-address, default: localhost", false, false },
 			  {	(void*) &int_port, T_NUM, "p", "Port, default: 7766", false, false },
-			  {	(void*) seed, T_NUM, "s", "Seed, default: 0", false, false }
+			  {	(void*) seed, T_NUM, "s", "Seed, default: 0", false, false },
+			  {	(void*) fname, T_STR, "f", "location of input file, default: a", false, false }
 			};
 
 	if (!parse_options(argcp, argvp, options,
@@ -74,9 +75,10 @@ int main(int argc, char** argv) {
 	int32_t test_op = -1;
 	e_mt_gen_alg mt_alg = MT_OT;
 	uint32_t seed = 0;
+	std::string fname = "";
 
 	read_test_options(&argc, &argv, &role, &bitlen, &neles, &nbins, &secparam, &address,
-			&port, &test_op, &seed);
+			&port, &test_op, &seed, &fname);
 
 	seclvl seclvl = get_sec_lvl(secparam);
 
@@ -84,7 +86,7 @@ int main(int argc, char** argv) {
 
 	std::cout << "begin PSI circuit with seed " << seed << std::endl;
 
-	test_psi_circuit(role, address, port, seclvl, neles, bitlen, nbins, nthreads, mt_alg, seed);
+	test_psi_circuit(role, address, port, seclvl, neles, bitlen, nbins, nthreads, mt_alg, seed, fname);
 
 
 	std::cout << "PSI circuit successfully executed" << std::endl;

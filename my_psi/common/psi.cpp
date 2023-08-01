@@ -33,9 +33,32 @@
 #include <regex>
 #define PSI
 
+void input(uint32_t *srv_set, uint32_t *cli_set, uint32_t neles, uint64_t mask){
+	uint32_t rndval;
+	for (uint32_t i = 0; i < neles; i++) {
+		do {
+			rndval = rand() & mask;
+		} while (std::find(srv_set, srv_set+neles, rndval) != srv_set+neles
+				|| std::find(cli_set, cli_set+neles, rndval) != cli_set+neles);
+
+		srv_set[i] = rndval ;
+		cli_set[i] = rndval ;
+	}
+}
+
+void read_file(uint32_t *srv_set, uint32_t *cli_set, uint32_t neles, std::string fname){
+	ifstream f;
+	f.open(fname);
+	uint32_t inp;
+	for (uint32_t i = 0; i < neles; i++) {
+		f >> inp;
+		srv_set[i] = inp ;
+		cli_set[i] = inp ;
+	}
+}
 
 int32_t test_psi_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
-		uint32_t neles, uint32_t bitlen, uint32_t nbins, uint32_t nthreads, e_mt_gen_alg mt_alg, uint32_t seed) {
+		uint32_t neles, uint32_t bitlen, uint32_t nbins, uint32_t nthreads, e_mt_gen_alg mt_alg, uint32_t seed, std::string fname) {
 	bool measure_bytes = false;
 	assert(bitlen <= 32);
 	uint64_t mask = ((uint64_t) 1 << bitlen)-1;
@@ -50,15 +73,8 @@ int32_t test_psi_circuit(e_role role, const std::string& address, uint16_t port,
 	std::vector<Sharing*>& sharings = party->GetSharings();
 	BooleanCircuit* bc = (BooleanCircuit*) sharings[S_BOOL]->GetCircuitBuildRoutine();
 
-	for (uint32_t i = 0; i < neles; i++) {
-		do {
-			rndval = rand() & mask;
-		} while (std::find(srv_set, srv_set+neles, rndval) != srv_set+neles
-				|| std::find(cli_set, cli_set+neles, rndval) != cli_set+neles);
-
-		srv_set[i] = rndval ;
-		cli_set[i] = rndval ;
-	}
+	// input(srv_set, cli_set, neles, mask);
+	read_file(srv_set, cli_set, neles, fname);
 	if (role == CLIENT){
 		std::cout << "client set:" << std::endl;
 		for(int32_t i = 0; i < neles; i++) {
