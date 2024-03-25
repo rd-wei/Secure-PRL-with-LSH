@@ -4,6 +4,8 @@
 
 The plaintext experiments are done with `PlainPRL.py`. 
 
+Unzip the [datasets](https://drive.google.com/drive/folders/13-ri16yl0WFEWoSnUtJwYIYiIs8y-03U?usp=sharing) into folders "NCVR" (North Carolina) and "bnb_tpl_datasets"(bnb_tpl), and put them in the same directory as PlainPRL.py
+
 ### Parameters
 
 The `-t` option specifies either the test uses `bnb_tpl` dataset or `ncvr` dataset.
